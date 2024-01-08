@@ -1,35 +1,50 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: use_build_context_synchronously
 
-class RegisterPage extends StatelessWidget {
+import 'package:contact_dio/model/register_model.dart';
+import 'package:contact_dio/view/screen/login_page.dart';
+import 'package:flutter/material.dart';
+import 'package:contact_dio/services/api_services.dart';
+
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final ApiServices _dataService = ApiServices();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register Page'),
-        backgroundColor: Color.fromARGB(255, 134, 31, 126),
+        title: const Text('Register Page'),
+        backgroundColor: const Color.fromARGB(255, 134, 31, 126),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Image.asset(
-                'images/logo.jpg',
-                width: 100,
-                height: 100,
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Image.asset(
+                  'images/logo.jpg',
+                  width: 100,
+                  height: 100,
+                ),
               ),
-            ), 
-              Text(
+              const Text(
                 'Welcome to To Do List Application let\'s make your accounnt',
                 style: TextStyle(
                   fontSize: 24, // Sesuaikan ukuran teks
@@ -37,14 +52,14 @@ class RegisterPage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.left,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
                       controller: _nameController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.person),
                         hintText: 'Enter your name...',
                         labelText: 'Name',
@@ -61,10 +76,10 @@ class RegisterPage extends StatelessWidget {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.email),
                         hintText: 'Enter your email...',
                         labelText: 'Email',
@@ -81,11 +96,11 @@ class RegisterPage extends StatelessWidget {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       obscureText: true,
                       controller: _passwordController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.lock),
                         hintText: 'Enter your password...',
                         labelText: 'Password',
@@ -102,10 +117,10 @@ class RegisterPage extends StatelessWidget {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _phoneNumberController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.phone),
                         hintText: 'Enter your phone number...',
                         labelText: 'Phone Number',
@@ -122,25 +137,62 @@ class RegisterPage extends StatelessWidget {
                         return null;
                       },
                     ),
-                    SizedBox(height: 24.0),
+                    const SizedBox(height: 24.0),
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Perform registration logic here
-                          // You can access the input values using
-                          // _nameController.text, _emailController.text, etc.
-                          // Call API or perform registration actions
-                          // Once registered, navigate to login page
-                          Navigator.pushReplacementNamed(context, '/login');
+                      onPressed: () async {
+                        final isValidForm = _formKey.currentState!.validate();
+                        if (isValidForm) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const AlertDialog(
+                                content: Row(
+                                  children: [
+                                    CircularProgressIndicator(),
+                                    SizedBox(width: 16.0),
+                                    Text("Logging in..."),
+                                  ],
+                                ),
+                              );
+                            },
+                            barrierDismissible: false,
+                          );
+
+                          final postModel = RegisterInput(
+                            name: _nameController.text,
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                            phoneNumber: _phoneNumberController.text,
+                          );
+
+                          try {
+                            RegisterResponse? res =
+                                await _dataService.register(postModel);
+                            Navigator.pop(context);
+                            if (res!.status == true) {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage(),
+                                ),
+                                (route) => false,
+                              );
+                            } else {
+                              displaySnackbar(res.message);
+                            }
+                          } catch (e) {
+                            Navigator.pop(context); // Close the loading dialog
+                            displaySnackbar(
+                                "An error occurred while logging in.");
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 134, 31,
-                            126), // Mengubah warna tombol menjadi hijau
+                        backgroundColor: const Color.fromARGB(255, 134, 31, 126), // Mengubah warna tombol menjadi hijau
                       ),
-                      child: Text('Register'),
+                      child: const Text('Register'),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextButton(
                       onPressed: () {
                         Navigator.pushReplacementNamed(context,
@@ -148,10 +200,10 @@ class RegisterPage extends StatelessWidget {
                       },
                       style: ButtonStyle(
                         foregroundColor: MaterialStateProperty.all<Color>(
-                            Color.fromARGB(255, 117, 35,
+                            const Color.fromARGB(255, 117, 35,
                                 110)), // Mengubah warna teks menjadi ungu
                       ),
-                      child: Text('Already have an account? Login'),
+                      child: const Text('Already have an account? Login'),
                     ),
                   ],
                 ),
@@ -161,5 +213,10 @@ class RegisterPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  dynamic displaySnackbar(String msg) {
+    return ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(msg)));
   }
 }
