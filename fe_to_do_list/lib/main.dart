@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: LoginPage(), // Ubah halaman awal menjadi LoginPage()
+      home: HomePage(), // Ubah halaman awal menjadi LoginPage()
       routes: {
         '/login': (context) => LoginPage(),
         '/register': (context) => RegisterPage(),

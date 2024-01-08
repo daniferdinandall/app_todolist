@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final ApiServices _dataService = ApiServices();
+  // final ApiServices _dataService = ApiServices();
 
   @override
   void initState() {
@@ -126,21 +126,21 @@ class _LoginPageState extends State<LoginPage> {
                             username: _usernameController.text,
                             password: _passwordController.text,
                           );
-                          LoginResponse? res =
-                              await _dataService.login(postModel);
-                          if (res!.status == 200) {
-                            await AuthManager.login(
-                                _usernameController.text, res.token.toString());
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const HomePage(),
-                              ),
-                              (route) => false,
-                            );
-                          } else {
-                            displaySnackbar(res.message);
-                          }
+                          // LoginResponse? res =
+                          //     await _dataService.login(postModel);
+                          // if (res!.status == 200) {
+                          //   await AuthManager.login(
+                          //       _usernameController.text, res.token.toString());
+                          //   Navigator.pushAndRemoveUntil(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => const HomePage(),
+                          //     ),
+                          //     (route) => false,
+                          //   );
+                          // } else {
+                          //   displaySnackbar(res.message);
+                          // }
                         }
                       },
                       style: ElevatedButton.styleFrom(
