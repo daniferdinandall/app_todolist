@@ -1,23 +1,27 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:contact_dio/model/login_model.dart';
 import 'package:contact_dio/services/api_services.dart';
 import 'package:contact_dio/services/auth_manager.dart';
 import 'package:contact_dio/view/screen/home_page.dart';
+import 'package:contact_dio/view/screen/register_page.dart';
 import 'package:flutter/material.dart';
-import 'package:contact_dio/model/register_model.dart';
+// import 'package:contact_dio/model/register_model.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // final ApiServices _dataService = ApiServices();
+  final ApiServices _dataService = ApiServices();
 
   @override
   void initState() {
@@ -40,12 +44,12 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  String? _validateUsername(String? value) {
+  String? _validateEmail(String? value) {
     if (value != null && value.length < 4) {
       return 'Masukkan minimal 4 karakter';
     }
@@ -68,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Login Page'),
-          backgroundColor: Color.fromARGB(255, 134, 31, 126),
+          backgroundColor: const Color.fromARGB(255, 134, 31, 126),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -80,12 +84,12 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
-                      validator: _validateUsername,
-                      controller: _usernameController,
+                      validator: _validateEmail,
+                      controller: _emailController,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.account_circle_rounded),
-                        hintText: 'Write username here...',
-                        labelText: 'Username',
+                        hintText: 'Write email here...',
+                        labelText: 'Email',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(10),
@@ -122,42 +126,73 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () async {
                         final isValidForm = _formKey.currentState!.validate();
                         if (isValidForm) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const AlertDialog(
+                                content: Row(
+                                  children: [
+                                    CircularProgressIndicator(),
+                                    SizedBox(width: 16.0),
+                                    Text("Logging in..."),
+                                  ],
+                                ),
+                              );
+                            },
+                            barrierDismissible: false,
+                          );
+
                           final postModel = LoginInput(
-                            username: _usernameController.text,
+                            email: _emailController.text,
                             password: _passwordController.text,
                           );
-                          // LoginResponse? res =
-                          //     await _dataService.login(postModel);
-                          // if (res!.status == 200) {
-                          //   await AuthManager.login(
-                          //       _usernameController.text, res.token.toString());
-                          //   Navigator.pushAndRemoveUntil(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context) => const HomePage(),
-                          //     ),
-                          //     (route) => false,
-                          //   );
-                          // } else {
-                          //   displaySnackbar(res.message);
-                          // }
+                          try {
+                            LoginResponse? res =
+                                await _dataService.login(postModel);
+                            Navigator.pop(context);
+                            if (res!.status == true) {
+                              await AuthManager.login(
+                                  _emailController.text, res.token.toString());
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HomePage(),
+                                ),
+                                (route) => false,
+                              );
+                            } else {
+                              displaySnackbar(res.message);
+                            }
+                          } catch (e) {
+                            Navigator.pop(context); // Close the loading dialog
+                            displaySnackbar(
+                                "An error occurred while logging in.");
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 117, 35, 110), 
+                        backgroundColor:
+                            const Color.fromARGB(255, 117, 35, 110),
                       ),
                       child: const Text('Login'),
                     ),
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/register');
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegisterPage(),
+                        ),
+                        (route) => false,
+                      );
                     },
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromARGB(255, 117, 35, 110)), // Mengubah warna teks menjadi ungu
+                          const Color.fromARGB(255, 117, 35,
+                              110)), // Mengubah warna teks menjadi ungu
                     ),
-                    child: Text('Don\'t have an account? Register'),
+                    child: const Text('Don\'t have an account? Register'),
                   ),
                 ],
               ),

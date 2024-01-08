@@ -1,15 +1,15 @@
 //DIGUNAKAN UNTUK FORM LOGIN
 class LoginInput {
-  final String username;
+  final String email;
   final String password;
 
   LoginInput({
-    required this.username,
+    required this.email,
     required this.password,
   });
 
   Map<String, dynamic> toJson() => {
-        "username": username,
+        "email": email,
         "password": password,
       };
 }
@@ -18,7 +18,7 @@ class LoginInput {
 class LoginResponse {
   final String? token;
   final String message;
-  final int status;
+  final bool status;
 
   LoginResponse({
     this.token,
@@ -27,7 +27,7 @@ class LoginResponse {
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
-        token: json["token"],
+        token: json["token"]?? "",
         message: json["message"],
         status: json["status"],
       );
