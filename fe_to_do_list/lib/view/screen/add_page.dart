@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-// import 'package:List_dio/services/api_services.dart';
-// import 'package:List_dio/model/lists_model.dart';
-import 'home_page.dart';
+
+typedef OnDataAddedCallback = void Function(String judul, String list);
 
 class AddDataPage extends StatefulWidget {
-  const AddDataPage({Key? key}) : super(key: key);
+  final OnDataAddedCallback? onDataAdded;
+
+  const AddDataPage({Key? key, this.onDataAdded}) : super(key: key);
 
   @override
   _AddDataPageState createState() => _AddDataPageState();
@@ -14,14 +15,6 @@ class _AddDataPageState extends State<AddDataPage> {
   final _formKey = GlobalKey<FormState>();
   final _judulCtl = TextEditingController();
   final _listCtl = TextEditingController();
-  // final ApiServices _dataService = ApiServices();
-
-  @override
-  void dispose() {
-    _judulCtl.dispose();
-    _listCtl.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,15 +54,11 @@ class _AddDataPageState extends State<AddDataPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    // if (_formKey.currentState!.validate()) {
-                    //   final postModel = ListInput(
-                    //     judul: _judulCtl.text,
-                    //     list: _listCtl.text,
-                    //   );
-                    //   await _dataService.postList(postModel);
-                    //   Navigator.pop(context); // Kembali ke halaman sebelumnya
-                    // }
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      widget.onDataAdded?.call(_judulCtl.text, _listCtl.text);
+                      Navigator.pop(context); // Go back to the previous page
+                    }
                   },
                   child: const Text('Tambah Data'),
                 ),

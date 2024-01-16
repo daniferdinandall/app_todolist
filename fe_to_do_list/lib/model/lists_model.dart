@@ -58,3 +58,10 @@ class ListResponse {
         status: json["status"],
       );
 }
+
+class DataItem {
+  final String judul;
+  final String list;
+
+  DataItem({required this.judul, required this.list});
+}

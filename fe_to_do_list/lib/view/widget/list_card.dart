@@ -1,67 +1,153 @@
-import 'package:contact_dio/model/lists_model.dart';
+import 'package:contact_dio/view/screen/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:contact_dio/main.dart';
+import 'package:contact_dio/view/screen/add_page.dart';
+import 'package:contact_dio/view/screen/edit_data_page.dart';
+import 'package:contact_dio/model/lists_model.dart';
 
-class ListCard extends StatelessWidget{
-  final ListResponse ctRes;
-  final Function() onDismissed;
+class ListCard extends StatefulWidget {
+  @override
+  _ListCardState createState() => _ListCardState();
+}
 
-  const ListCard({Key? key, required this.ctRes, required this.onDismissed})
-      : super(key: key);
+class _ListCardState extends State<ListCard> {
+  List<DataItem> dataList = [];
+
+  void onDataAdded(String judul, String list) {
+    setState(() {
+      dataList.add(DataItem(judul: judul, list: list));
+    });
+  }
+
+  void onDataEdited(int index, String judul, String list) {
+    setState(() {
+      dataList[index] = DataItem(judul: judul, list: list);
+    });
+  }
+
+  void onDismissed(int index) {
+    setState(() {
+      dataList.removeAt(index);
+    });
+  }
+
+void onLogout() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Konfirmasi Logout'),
+        content: Text('Apakah Anda yakin ingin keluar?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Tutup dialog
+            },
+            child: Text('Tidak'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Implement logout logic here
+              // For example, you can navigate to the login page
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (BuildContext context) => LoginPage()), // Gantilah dengan halaman login Anda
+                (Route<dynamic> route) => false,
+              );
+            },
+            child: Text('Ya'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: Key(ctRes.message),
-      onDismissed: (direction) {
-        onDismissed();
-      },
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20.0),
-        child: const Icon(Icons.delete, color: Colors.white),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('List Card'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              onLogout();
+            },
+          ),
+        ],
       ),
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.lightBlue[200],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (ctRes.insertedId != null) _buildDataRow('ID', ctRes.insertedId),
-            // _buildDataRow('ID', ctRes.insertedId),
-            _buildDataRow('Message', ctRes.message),
-            _buildDataRow('Status', ctRes.status),
-          ],
-        ),
+      body: ListView.builder(
+        itemCount: dataList.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditDataPage(
+                    judul: dataList[index].judul,
+                    list: dataList[index].list,
+                    onDataEdited: (judul, list) {
+                      onDataEdited(index, judul, list);
+                    },
+                  ),
+                ),
+              );
+            },
+            child: Card(
+              elevation: 2.0,
+              margin: const EdgeInsets.all(8.0),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDataRow('Judul', dataList[index].judul),
+                    _buildDataRow('List', dataList[index].list),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddDataPage(onDataAdded: onDataAdded),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
 
-  Widget _buildDataRow(String label, dynamic value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 60,
-          child: Text(
-            label,
+  Widget _buildDataRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label:',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),
-        ),
-        const SizedBox(width: 10), // Jarak antara label dan titik dua
-        Expanded(
-          child: Text(
-            ': $value',
-            softWrap: true,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              value,
+              softWrap: true,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
