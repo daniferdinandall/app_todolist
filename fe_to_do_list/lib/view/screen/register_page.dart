@@ -5,7 +5,6 @@ import 'package:contact_dio/view/screen/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:contact_dio/services/api_services.dart';
 
-
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -37,12 +36,15 @@ class _RegisterPageState extends State<RegisterPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Container(
-                margin: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Image.asset(
-                  'images/logo.jpg',
-                  width: 100,
-                  height: 100,
+                width: double.infinity,
+                height: 250,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/logo.jpg'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
+                child: null, // Tidak perlu child di sini
               ),
               const Text(
                 'Welcome to To Do List Application let\'s make your accounnt',
@@ -188,7 +190,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 134, 31, 126), // Mengubah warna tombol menjadi hijau
+                        backgroundColor: const Color.fromARGB(255, 134, 31,
+                            126), // Mengubah warna tombol menjadi hijau
                       ),
                       child: const Text('Register'),
                     ),
