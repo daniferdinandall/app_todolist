@@ -1,11 +1,9 @@
 import 'package:contact_dio/view/screen/add_page.dart';
 import 'package:contact_dio/view/screen/login_page.dart';
+import 'package:contact_dio/navbar.dart';
 import 'package:contact_dio/view/screen/register_page.dart';
-import 'package:contact_dio/view/widget/list_card.dart';
 import 'package:flutter/material.dart';
 import 'view/screen/home_page.dart';
-import 'package:contact_dio/view/screen/register_page.dart';
-import 'package:contact_dio/view/widget/list_card.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,13 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: ListCard(), // Ubah halaman awal menjadi LoginPage()
-      routes: {
-        '/login': (context) => LoginPage(),
-        '/register': (context) => RegisterPage(),
-        '/home': (context) => HomePage(),
-        '/add': (context) => AddDataPage(),
-      },
+      home: const LoginPage(), // Ubah halaman awal menjadi LoginPage()
     );
   }
 }

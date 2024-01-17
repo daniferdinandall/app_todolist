@@ -1,9 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:contact_dio/model/login_model.dart';
+import 'package:contact_dio/navbar.dart';
 import 'package:contact_dio/services/api_services.dart';
 import 'package:contact_dio/services/auth_manager.dart';
-import 'package:contact_dio/view/screen/home_page.dart';
 import 'package:contact_dio/view/screen/register_page.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    debugPrint("Init state is called.");
     checkLogin();
   }
 
@@ -33,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => const BottomNavBar(),
         ),
         (route) => false,
       );
@@ -172,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const HomePage(),
+                                  builder: (context) => const BottomNavBar(),
                                 ),
                                 (route) => false,
                               );

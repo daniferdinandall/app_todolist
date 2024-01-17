@@ -1,41 +1,62 @@
 // Model untuk mendapatkan data
 class ListsModel {
   final String id;
-  final String judul;
-  final String list;
+  final String title;
+  final String description;
+  final int duedate;
+  final int priority;
+  final int createdat;
 
   ListsModel({
     required this.id,
-    required this.judul,
-    required this.list,
+    required this.title,
+    required this.description,
+    required this.duedate,
+    required this.priority,
+    required this.createdat,
   });
 
   factory ListsModel.fromJson(Map<String, dynamic> json) => ListsModel(
         id: json["_id"],
-        judul: json["judul"],
-        list: json["list"],
+        title: json["title"],
+        description: json["description"],
+        duedate: json["duedate"],
+        priority: json["priority"],
+        createdat: json["createdat"],
       );
 
   Map<String, dynamic> toJson() => {
         "_id": id,
-        "judul": judul,
-        "list": list,
+        "title": title,
+        "description": description,
+        "duedate": duedate,
+        "priority": priority,
+        "createdat": createdat,
       };
 }
 
 // Model untuk input form
 class ListInput {
-  final String judul;
-  final String list;
+  final String title;
+  final String description;
+  final int duedate;
+  final int priority;
+  final int createdat;
 
   ListInput({
-    required this.judul,
-    required this.list,
+    required this.title,
+    required this.description,
+    required this.duedate,
+    required this.priority,
+    required this.createdat,
   });
 
   Map<String, dynamic> toJson() => {
-        "judul": judul,
-        "list": list,
+        "title": title,
+        "description": description,
+        "duedate": duedate,
+        "priority": priority,
+        "createdat": createdat,
       };
 }
 
@@ -44,11 +65,17 @@ class ListResponse {
   final String? insertedId;
   final String message;
   final int status;
+  final int duedate;
+  final int priority;
+  final int createdat;
 
   ListResponse({
     this.insertedId,
     required this.message,
     required this.status,
+    required this.duedate,
+    required this.priority,
+    required this.createdat,
   });
 
   factory ListResponse.fromJson(Map<String, dynamic> json) =>
@@ -56,12 +83,24 @@ class ListResponse {
         insertedId: json["inserted_id"],
         message: json["message"],
         status: json["status"],
+        duedate: json["duedate"],
+        priority: json["priority"],
+        createdat: json["createdat"],
       );
 }
 
 class DataItem {
-  final String judul;
-  final String list;
+  final String title;
+  final String description;
+  final int duedate;
+  final int priority;
+  final int createdat;
 
-  DataItem({required this.judul, required this.list});
+  DataItem({
+    required this.title, 
+    required this.description,
+    required this.duedate,
+    required this.priority,
+    required this.createdat,
+  });
 }
