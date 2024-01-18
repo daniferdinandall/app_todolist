@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
 import 'package:contact_dio/model/lists_model.dart';
+import 'package:contact_dio/navbar.dart';
 import 'package:contact_dio/services/api_services.dart';
 import 'package:contact_dio/view/screen/home_page.dart';
 import 'package:flutter/material.dart';
@@ -174,7 +175,7 @@ class _ShowTodolistState extends State<ShowTodolist> {
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const HomePage(),
+                                  builder: (context) => const BottomNavBar(),
                                 ),
                                 (route) => false,
                               );
@@ -211,7 +212,7 @@ class _ShowTodolistState extends State<ShowTodolist> {
                 final selectDate = await showDatePicker(
                   context: context,
                   initialDate: _dueDateTime,
-                  firstDate: DateTime(1990),
+                  firstDate: currentDate,
                   lastDate: DateTime(currentDate.year + 10),
                 );
 

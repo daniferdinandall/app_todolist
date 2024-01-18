@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
 import 'package:contact_dio/model/login_model.dart';
 import 'package:contact_dio/navbar.dart';
@@ -26,6 +26,8 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     debugPrint("Init state is called.");
     checkLogin();
+    _passwordController.text="12345678";
+    _emailController.text="dani@mail.com";
   }
 
   void checkLogin() async {
@@ -41,12 +43,12 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _emailController.dispose();
+  //   _passwordController.dispose();
+  //   super.dispose();
+  // }
 
   String? _validateEmail(String? value) {
     if (value != null && value.length < 4) {
@@ -81,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Container(
+                  SizedBox(
                     height: 250, // Sesuaikan tinggi gambar
                     child: Image.asset(
                       'images/logo.jpg', // Ganti dengan path gambar yang sesuai
@@ -199,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RegisterPage(),
+                          builder: (context) => const RegisterPage(),
                         ),
                         (route) => false,
                       );
