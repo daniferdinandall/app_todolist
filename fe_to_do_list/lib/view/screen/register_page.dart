@@ -23,6 +23,15 @@ class _RegisterPageState extends State<RegisterPage> {
   final ApiServices _dataService = ApiServices();
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneNumberController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Container(
                 width: double.infinity,
                 height: 250,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('images/logo.jpg'),
                     fit: BoxFit.cover,

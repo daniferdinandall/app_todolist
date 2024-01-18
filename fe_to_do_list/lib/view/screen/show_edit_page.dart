@@ -4,44 +4,51 @@ import 'package:contact_dio/model/lists_model.dart';
 import 'package:contact_dio/services/api_services.dart';
 import 'package:contact_dio/view/screen/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:intl/intl.dart';
+class ShowTodolist extends StatefulWidget {
+  final String idTodolist;
+  final String data;
 
-class AddDataPage extends StatefulWidget {
-  const AddDataPage({Key? key }) : super(key: key);
+  const ShowTodolist({Key? key, required this.data, required this.idTodolist}) : super(key: key);
 
   @override
-  _AddDataPageState createState() => _AddDataPageState();
+  _ShowTodolistState createState() => _ShowTodolistState();
 }
 
-class _AddDataPageState extends State<AddDataPage> {
-  List<String> addedData = [];
-
+class _ShowTodolistState extends State<ShowTodolist> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtl = TextEditingController();
   final _descCtl = TextEditingController();
   final _priorityCtl = TextEditingController();
-  
-  final ApiServices _dataService = ApiServices();
 
   String selectedValue = 'Priority 1';
   List<String> options = ['Priority 1', 'Priority 2', 'Priority 3'];
 
   DateTime _dueDateTime = DateTime.now();
   final currentDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
 
+  final ApiServices _dataService = ApiServices();
+  
   late SharedPreferences logindata;
   String token = '';
   @override
   void initState() {
     super.initState();
+    // Parsing data yang diterima untuk mendapatkan judul, deskripsi, prioritas, dan due date
+    List<String> parts = widget.data.split('-');
     inital();
-    List parts = selectedValue.split(' ');
-    _priorityCtl.text = parts[1];
-    debugPrint("Init state is called.");
+    _titleCtl.text = parts[0];
+    _descCtl.text = parts[1];
+    _priorityCtl.text = parts[2];
+    selectedValue = "Priority ${parts[2]}";
+    _dueDateTime = DateTime.fromMillisecondsSinceEpoch(int.parse(parts[3]) * 1000);
+    selectedDate = DateTime.parse(parts[3]);
   }
-  Future<void> inital() async {
+
+    Future<void> inital() async {
     logindata = await SharedPreferences.getInstance();
     setState(() {
       token = logindata.getString('token').toString();
@@ -49,12 +56,11 @@ class _AddDataPageState extends State<AddDataPage> {
   }
 
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Data'),
+        title: const Text('Detail Data'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -63,7 +69,6 @@ class _AddDataPageState extends State<AddDataPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("token=$token"),
               TextFormField(
                 controller: _titleCtl,
                 decoration: const InputDecoration(labelText: 'Title'),
@@ -155,7 +160,7 @@ class _AddDataPageState extends State<AddDataPage> {
                         },
                         barrierDismissible: false,
                       );
-
+                      print(">>>>>>>>>>>>>RESPONSE<<<<<<<<<<<<< ${_priorityCtl.text}");
                       final postModel = ListInput(
                         title: _titleCtl.text,
                         description: _descCtl.text,
@@ -163,7 +168,7 @@ class _AddDataPageState extends State<AddDataPage> {
                         duedate: _dueDateTime.millisecondsSinceEpoch ~/ 1000,
                       );
                       try {
-                        TodolistResponse? res = await _dataService.postTodolist(postModel,token);
+                        TodolistResponse? res = await _dataService.putTodolist(postModel,widget.idTodolist,token);
                         Navigator.pop(context);
                         if (res.status == true) {
                               Navigator.pushAndRemoveUntil(
@@ -182,10 +187,9 @@ class _AddDataPageState extends State<AddDataPage> {
                       }
                     }
                   },
-                  child: const Text('Tambah Data'),
+                  child: const Text('Save Data'),
                 ),
               ),
-              
             ],
           ),
         ),
@@ -206,7 +210,7 @@ class _AddDataPageState extends State<AddDataPage> {
               onPressed: () async {
                 final selectDate = await showDatePicker(
                   context: context,
-                  initialDate: currentDate,
+                  initialDate: _dueDateTime,
                   firstDate: DateTime(1990),
                   lastDate: DateTime(currentDate.year + 10),
                 );
@@ -237,8 +241,8 @@ class _AddDataPageState extends State<AddDataPage> {
       ],
     );
   }
+
   dynamic displaySnackbar(String msg) {
-  return ScaffoldMessenger.of(context)
-      .showSnackBar(SnackBar(content: Text(msg)));
+    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }

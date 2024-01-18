@@ -1,9 +1,5 @@
-import 'package:contact_dio/view/screen/add_page.dart';
 import 'package:contact_dio/view/screen/login_page.dart';
-import 'package:contact_dio/navbar.dart';
-import 'package:contact_dio/view/screen/register_page.dart';
 import 'package:flutter/material.dart';
-import 'view/screen/home_page.dart';
 
 void main() {
   runApp(const MyApp());

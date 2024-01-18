@@ -1,4 +1,4 @@
-//DIGUNAKAN UNTUK FORM LOGIN
+//DIGUNAKAN UNTUK INPUT FORM LOGIN
 class RegisterInput {
   final String name;
   final String email;
@@ -20,27 +20,7 @@ class RegisterInput {
       };
 }
 
-class RegisterRequest {
-  final String name;
-  final String email;
-  final String password;
-  final String phoneNumber;
-
-  RegisterRequest({
-    required this.name,
-    required this.email,
-    required this.password,
-    required this.phoneNumber,
-  });
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "email": email,
-        "password": password,
-        "phoneNumber": phoneNumber,
-      };
-}
-
+//DIGUNAKAN UNTUK RESPONSE LOGIN
 class RegisterResponse {
   // final String? token;
   final String message;

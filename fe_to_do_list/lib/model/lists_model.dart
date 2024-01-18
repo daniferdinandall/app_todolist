@@ -41,14 +41,12 @@ class ListInput {
   final String description;
   final int duedate;
   final int priority;
-  final int createdat;
 
   ListInput({
     required this.title,
     required this.description,
     required this.duedate,
     required this.priority,
-    required this.createdat,
   });
 
   Map<String, dynamic> toJson() => {
@@ -56,51 +54,25 @@ class ListInput {
         "description": description,
         "duedate": duedate,
         "priority": priority,
-        "createdat": createdat,
       };
 }
 
 // Model untuk respons
-class ListResponse {
-  final String? insertedId;
+class TodolistResponse {
+  // final String? token;
   final String message;
-  final int status;
-  final int duedate;
-  final int priority;
-  final int createdat;
+  final bool status;
 
-  ListResponse({
-    this.insertedId,
+  TodolistResponse({
+    // this.token,
     required this.message,
     required this.status,
-    required this.duedate,
-    required this.priority,
-    required this.createdat,
   });
 
-  factory ListResponse.fromJson(Map<String, dynamic> json) =>
-      ListResponse(
-        insertedId: json["inserted_id"],
+  factory TodolistResponse.fromJson(Map<String, dynamic> json) =>
+      TodolistResponse(
+        // token: json["token"],
         message: json["message"],
         status: json["status"],
-        duedate: json["duedate"],
-        priority: json["priority"],
-        createdat: json["createdat"],
       );
-}
-
-class DataItem {
-  final String title;
-  final String description;
-  final int duedate;
-  final int priority;
-  final int createdat;
-
-  DataItem({
-    required this.title, 
-    required this.description,
-    required this.duedate,
-    required this.priority,
-    required this.createdat,
-  });
 }
