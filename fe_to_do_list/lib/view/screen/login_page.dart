@@ -1,18 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:contact_dio/model/login_model.dart';
+import 'package:contact_dio/navbar.dart';
 import 'package:contact_dio/services/api_services.dart';
 import 'package:contact_dio/services/auth_manager.dart';
-import 'package:contact_dio/view/screen/home_page.dart';
 import 'package:contact_dio/view/screen/register_page.dart';
 import 'package:flutter/material.dart';
-// import 'package:contact_dio/model/register_model.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -26,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    debugPrint("Init state is called.");
     checkLogin();
   }
 
@@ -35,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => const BottomNavBar(),
         ),
         (route) => false,
       );
@@ -80,7 +79,25 @@ class _LoginPageState extends State<LoginPage> {
             child: Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Container(
+                    height: 250, // Sesuaikan tinggi gambar
+                    child: Image.asset(
+                      'images/logo.jpg', // Ganti dengan path gambar yang sesuai
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  const Text(
+                    'Welcome Back to ToDo List App',
+                    style: TextStyle(
+                      fontSize: 24, // Sesuaikan ukuran teks
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16.0),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
@@ -156,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const HomePage(),
+                                  builder: (context) => const BottomNavBar(),
                                 ),
                                 (route) => false,
                               );
@@ -164,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                               displaySnackbar(res.message);
                             }
                           } catch (e) {
-                            Navigator.pop(context); // Close the loading dialog
+                            Navigator.pop(context);
                             displaySnackbar(
                                 "An error occurred while logging in.");
                           }
@@ -190,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all<Color>(
                           const Color.fromARGB(255, 117, 35,
-                              110)), // Mengubah warna teks menjadi ungu
+                              110)),
                     ),
                     child: const Text('Don\'t have an account? Register'),
                   ),

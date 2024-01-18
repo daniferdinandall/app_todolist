@@ -1,8 +1,5 @@
 import 'package:contact_dio/view/screen/login_page.dart';
-import 'package:contact_dio/view/screen/register_page.dart';
 import 'package:flutter/material.dart';
-import 'view/screen/home_page.dart';
-import 'package:contact_dio/view/screen/register_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,12 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: LoginPage(), // Ubah halaman awal menjadi LoginPage()
-      routes: {
-        '/login': (context) => LoginPage(),
-        '/register': (context) => RegisterPage(),
-        '/home': (context) => HomePage(),
-      },
+      home: const LoginPage(), // Ubah halaman awal menjadi LoginPage()
     );
   }
 }
