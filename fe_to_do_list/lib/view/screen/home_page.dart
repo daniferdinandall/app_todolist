@@ -25,28 +25,33 @@ class _HomePageState extends State<HomePage> {
 
   final _formKey = GlobalKey<FormState>();
   final ApiServices _dataService = ApiServices();
-  final List<ListsModel> _listsMdl = [];
+  List<ListsModel> _listsMdl = [];
+  final List<ListsModel> _baseListsMdl = [];
   late SharedPreferences logindata;
 
-  
-
+  String dueDateUpIcon = "netral"; //netral, up, down
+  String createdAtIcon = "down"; //netral, up, down
   TodolistResponse? ctRes;
-  
+
   String email = '';
   String token = '';
 
   bool isLoading = false;
 
+  String selectedValue = 'All';
+  List<String> options = ['All', 'No 1', 'No 2', 'No 3'];
+
   @override
   void initState() {
     super.initState();
-    checkLogin().then((_)=>{
-      inital().then((_) => {
-        if(!_listsMdl.isNotEmpty) {
-          refreshToDoList(),
-        }
-      })
-    });
+    checkLogin().then((_) => {
+          inital().then((_) => {
+                if (!_listsMdl.isNotEmpty)
+                  {
+                    refreshToDoList(),
+                  }
+              })
+        });
   }
 
   checkLogin() async {
@@ -74,12 +79,61 @@ class _HomePageState extends State<HomePage> {
     isLoading = true;
     final todolist = await _dataService.getAllTodolist(token);
     setState(() {
-      if (_listsMdl.isNotEmpty) _listsMdl.clear();
-      if (todolist != null) _listsMdl.addAll(todolist);
+      if (_listsMdl.isNotEmpty) {
+        _listsMdl.clear();
+        _baseListsMdl.clear();
+      }
+
+      if (todolist != null) {
+        _listsMdl.addAll(todolist);
+        _baseListsMdl.addAll(todolist);
+      }
     });
     isLoading = false;
   }
-  
+
+  Future<void> sortByDueDate() async {
+    isLoading = true;
+    if (_listsMdl.isNotEmpty) {
+      if (dueDateUpIcon == "up") {
+        _listsMdl.sort((a, b) => b.duedate.compareTo(a.duedate));
+      } else if (dueDateUpIcon == "down") {
+        _listsMdl.sort((a, b) => a.duedate.compareTo(b.duedate));
+      }
+    }
+    isLoading = false;
+  }
+
+  Future<void> sortByCreatedAt() async {
+    isLoading = true;
+    if (_listsMdl.isNotEmpty) {
+      if (createdAtIcon == "up") {
+        _listsMdl.sort((a, b) => b.createdat.compareTo(a.createdat));
+      } else if (createdAtIcon == "down") {
+        _listsMdl.sort((a, b) => a.createdat.compareTo(b.createdat));
+      }
+    }
+    isLoading = false;
+  }
+
+  Future<void> filterByPriority() async {
+    isLoading = true;
+    if (_listsMdl.isNotEmpty) {
+      if (selectedValue == "No 1") {
+        _listsMdl =
+            _baseListsMdl.where((element) => element.priority == 1).toList();
+      } else if (selectedValue == "No 2") {
+        _listsMdl =
+            _baseListsMdl.where((element) => element.priority == 2).toList();
+      } else if (selectedValue == "No 3") {
+        _listsMdl =
+            _baseListsMdl.where((element) => element.priority == 3).toList();
+      } else {
+        _listsMdl = _baseListsMdl;
+      }
+    }
+    isLoading = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +169,128 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 const SizedBox(height: 8.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: Text(
+                              'Priority:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child: DropdownButton<String>(
+                              value: selectedValue,
+                              onChanged: (String? newValue) {
+                                // Handle dropdown value change
+                                setState(() {
+                                  selectedValue = newValue!;
+                                  filterByPriority();
+                                });
+                              },
+                              items: options.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: Text(
+                              'Due Date:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              // Handle button tap, misalnya, perubahan ikon atau aksi lainnya
+                              setState(() {
+                                dueDateUpIcon == "netral"
+                                    ? dueDateUpIcon = "up"
+                                    : dueDateUpIcon == "up"
+                                        ? dueDateUpIcon = "down"
+                                        : dueDateUpIcon = "up";
+                                // dueDateUpIcon = !dueDateUpIcon;
+                                sortByDueDate();
+                                createdAtIcon = "netral";
+                              });
+                              print('Button tapped!');
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(
+                                dueDateUpIcon == "netral"
+                                    ? Icons.sort
+                                    : dueDateUpIcon == "up"
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                              ),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: Text(
+                              'Created At:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              // Handle button tap, misalnya, perubahan ikon atau aksi lainnya
+                              setState(() {
+                                createdAtIcon == "netral"
+                                    ? createdAtIcon = "up"
+                                    : createdAtIcon == "up"
+                                        ? createdAtIcon = "down"
+                                        : createdAtIcon = "up";
+                                // createdAtIcon = !createdAtIcon;
+                                sortByCreatedAt();
+                                dueDateUpIcon = "netral";
+                              });
+                              print('Button tapped!');
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(
+                                createdAtIcon == "netral"
+                                    ? Icons.sort
+                                    : createdAtIcon == "up"
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
                 Expanded(
-                  child: _listsMdl.isEmpty ? (isLoading? const Center(child: CircularProgressIndicator()):const Text("Tidak Ada Data")) : _buildListTodolist(context),
+                  child: _listsMdl.isEmpty
+                      ? (isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : const Text("Tidak Ada Data"))
+                      : _buildListTodolist(context),
                 ),
                 const SizedBox(
                   height: 20,
@@ -150,6 +324,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
   Widget _buildListTodolist(BuildContext context) {
     return ListView.separated(
       itemBuilder: (context, index) {
@@ -174,16 +349,41 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 14.0,
                   ),
                 ),
+                Text(
+                  'Created At: ${DateTime.fromMillisecondsSinceEpoch(ctList.createdat * 1000).toString()}',
+                  style: const TextStyle(
+                    color: Colors.black38,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.0,
+                  ),
+                ),
               ],
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  onPressed: () async {
-                    // Handle any callback or refresh logic after returning from ShowPage
-                  },
-                  icon: const Icon(Icons.edit),
+                Container(
+                  width: 20.0,
+                  height: 20.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: ctList.priority == 1
+                        ? Colors.red
+                        : ctList.priority == 2
+                            ? Colors.yellow
+                            : Colors.blue,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      (ctList.priority == 1)
+                          ? Icons.priority_high_rounded
+                          : (ctList.priority == 2)
+                              ? Icons.warning_rounded
+                              : Icons.info_rounded,
+                      color: Colors.white,
+                      size: 14.0,
+                    ),
+                  ),
                 ),
                 IconButton(
                   onPressed: () {
@@ -199,7 +399,11 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ShowTodolist(idTodolist: ctList.id,data: "${ctList.title}-${ctList.description}-${ctList.priority}-${ctList.duedate}",), // Pass data to ShowPage if needed
+                  builder: (context) => ShowTodolist(
+                    idTodolist: ctList.id,
+                    data:
+                        "${ctList.title}-${ctList.description}-${ctList.priority}-${ctList.duedate}",
+                  ), // Pass data to ShowPage if needed
                 ),
               );
               // Handle any callback or refresh logic after returning from ShowPage
@@ -228,7 +432,8 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton(
               onPressed: () async {
-                TodolistResponse? res = await _dataService.deleteTodolist(id, token);
+                TodolistResponse? res =
+                    await _dataService.deleteTodolist(id, token);
                 setState(() {
                   ctRes = res;
                 });
@@ -242,8 +447,6 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-
-
 
   dynamic displaySnackbar(String msg) {
     return ScaffoldMessenger.of(context)
