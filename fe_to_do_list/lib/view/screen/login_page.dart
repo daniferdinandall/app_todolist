@@ -18,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   final ApiServices _dataService = ApiServices();
 
@@ -26,8 +27,8 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     debugPrint("Init state is called.");
     checkLogin();
-    _passwordController.text="12345678";
-    _emailController.text="dani@mail.com";
+    _passwordController.text = "12345678";
+    _emailController.text = "dani@mail.com";
   }
 
   void checkLogin() async {
@@ -42,13 +43,6 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
-
-  // @override
-  // void dispose() {
-  //   _emailController.dispose();
-  //   _passwordController.dispose();
-  //   super.dispose();
-  // }
 
   String? _validateEmail(String? value) {
     if (value != null && value.length < 4) {
@@ -84,9 +78,9 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(
-                    height: 250, // Sesuaikan tinggi gambar
+                    height: 250,
                     child: Image.asset(
-                      'images/logo.jpg', // Ganti dengan path gambar yang sesuai
+                      'images/logo.jpg',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -94,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                   const Text(
                     'Welcome Back to ToDo List App',
                     style: TextStyle(
-                      fontSize: 24, // Sesuaikan ukuran teks
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -141,10 +135,41 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      obscureText: true,
+                      controller: _confirmPasswordController,
+                      validator: (value) {
+                        if (value != _passwordController.text) {
+                          return 'Konfirmasi password tidak sesuai';
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.password_rounded),
+                        hintText: 'Repeat your password here...',
+                        labelText: 'Confirm Password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                        fillColor: Color.fromARGB(255, 242, 254, 255),
+                        filled: true,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                       onPressed: () async {
                         final isValidForm = _formKey.currentState!.validate();
                         if (isValidForm) {
+                          if (_passwordController.text !=
+                              _confirmPasswordController.text) {
+                            displaySnackbar(
+                                "Password and confirmation password do not match");
+                            return;
+                          }
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -169,6 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                             LoginResponse? res =
                                 await _dataService.login(postModel);
                             Navigator.pop(context);
+
                             if (res!.status == true) {
                               await AuthManager.login(
                                   _emailController.text, res.token.toString());
@@ -178,6 +204,24 @@ class _LoginPageState extends State<LoginPage> {
                                   builder: (context) => const BottomNavBar(),
                                 ),
                                 (route) => false,
+                              );
+
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Success"),
+                                    content: const Text("Login successful!"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("OK"),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             } else {
                               displaySnackbar(res.message);
@@ -208,8 +252,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromARGB(255, 117, 35,
-                              110)),
+                          const Color.fromARGB(255, 117, 35, 110)),
                     ),
                     child: const Text('Don\'t have an account? Register'),
                   ),
