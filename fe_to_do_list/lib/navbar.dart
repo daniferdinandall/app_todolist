@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:contact_dio/view/screen/home_page.dart';
+import 'package:contact_dio/view/screen/profile_page.dart'; // Import halaman profil
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -8,16 +9,17 @@ class BottomNavBar extends StatefulWidget {
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar>  {
+class _BottomNavBarState extends State<BottomNavBar> {
   int _currentPageIndex = 0;
 
   final List<Widget> _pages = <Widget>[
     const HomePage(),
-    MyShared(),
+    ProfilePage(), // Ganti dengan halaman profil
   ];
+
   void onTabTapped(int index) {
     setState(() {
-    _currentPageIndex = index;
+      _currentPageIndex = index;
     });
   }
 
@@ -28,7 +30,7 @@ class _BottomNavBarState extends State<BottomNavBar>  {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPageIndex,
         onTap: onTabTapped,
-        items: const [  
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Todolist'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
@@ -40,11 +42,11 @@ class _BottomNavBarState extends State<BottomNavBar>  {
   }
 }
 
-class MyShared extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 2'),
-    );
-  }
-}
+// class MyShared extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Text('Page 2'),
+//     );
+//   }
+// }

@@ -135,41 +135,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      obscureText: true,
-                      controller: _confirmPasswordController,
-                      validator: (value) {
-                        if (value != _passwordController.text) {
-                          return 'Konfirmasi password tidak sesuai';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.password_rounded),
-                        hintText: 'Repeat your password here...',
-                        labelText: 'Confirm Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        fillColor: Color.fromARGB(255, 242, 254, 255),
-                        filled: true,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                       onPressed: () async {
                         final isValidForm = _formKey.currentState!.validate();
                         if (isValidForm) {
-                          if (_passwordController.text !=
-                              _confirmPasswordController.text) {
-                            displaySnackbar(
-                                "Password and confirmation password do not match");
-                            return;
-                          }
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {

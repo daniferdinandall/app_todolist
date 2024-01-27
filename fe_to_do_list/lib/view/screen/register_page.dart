@@ -18,18 +18,11 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController(); // Added for confirmation password
   final TextEditingController _phoneNumberController = TextEditingController();
 
   final ApiServices _dataService = ApiServices();
-
-  // @override
-  // void dispose() {
-  //   _nameController.dispose();
-  //   _phoneNumberController.dispose();
-  //   _emailController.dispose();
-  //   _passwordController.dispose();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +46,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: null, // Tidak perlu child di sini
+                child: null,
               ),
               const Text(
-                'Welcome to To Do List Application let\'s make your accounnt',
+                'Welcome to To Do List Application let\'s make your account',
                 style: TextStyle(
-                  fontSize: 24, // Sesuaikan ukuran teks
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.left,
@@ -130,6 +123,28 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
+                      obscureText: true,
+                      controller: _confirmPasswordController,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.lock),
+                        hintText: 'Confirm your password...',
+                        labelText: 'Confirm Password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty ||
+                            value != _passwordController.text) {
+                          return 'Password confirmation does not match';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
                       controller: _phoneNumberController,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.phone),
@@ -192,28 +207,28 @@ class _RegisterPageState extends State<RegisterPage> {
                               displaySnackbar(res.message);
                             }
                           } catch (e) {
-                            Navigator.pop(context); // Close the loading dialog
+                            Navigator.pop(context);
                             displaySnackbar(
-                                "An error occurred while logging in.");
+                                "An error occurred while registering.");
                           }
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 134, 31,
-                            126), // Mengubah warna tombol menjadi hijau
+                        backgroundColor:
+                            const Color.fromARGB(255, 134, 31, 126),
                       ),
                       child: const Text('Register'),
                     ),
                     const SizedBox(height: 16.0),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context,
-                            '/login'); // Navigasi ke halaman login saat tombol ditekan
+                        Navigator.pushReplacementNamed(
+                            context, '/login');
                       },
                       style: ButtonStyle(
                         foregroundColor: MaterialStateProperty.all<Color>(
-                            const Color.fromARGB(255, 117, 35,
-                                110)), // Mengubah warna teks menjadi ungu
+                          const Color.fromARGB(255, 117, 35, 110),
+                        ),
                       ),
                       child: const Text('Already have an account? Login'),
                     ),
