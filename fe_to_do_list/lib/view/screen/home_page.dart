@@ -19,10 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-// class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
-//   @override
-//   bool get wantKeepAlive => true;
-
   final _formKey = GlobalKey<FormState>();
   final ApiServices _dataService = ApiServices();
   List<ListsModel> _listsMdl = [];
@@ -46,14 +42,10 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     inital().then((_) => {
-          if (!_listsMdl.isNotEmpty)
-            {
-              refreshToDoList()
-            }
+          if (!_listsMdl.isNotEmpty) {refreshToDoList()}
         });
   }
 
-  
   Future<void> inital() async {
     logindata = await SharedPreferences.getInstance();
     setState(() {
@@ -291,35 +283,30 @@ class _HomePageState extends State<HomePage> {
                       : _buildListTodolist(context),
                 ),
                 const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        await refreshToDoList();
-                        setState(() {});
-                      },
-                      child: const Text('Refresh Data'),
-                    )
-                  ],
+                  height: 50,
                 ),
               ],
             ),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddDataPage(),
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(top: 50),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AddDataPage(),
+              ),
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+      
     );
   }
 

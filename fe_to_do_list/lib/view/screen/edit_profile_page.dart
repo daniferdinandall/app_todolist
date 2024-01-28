@@ -1,77 +1,176 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'dart:io';
+import 'package:contact_dio/model/profile_model.dart';
+import 'package:contact_dio/navbar.dart';
+import 'package:contact_dio/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
+  final String data;
+
+  const EditProfilePage({Key? key, required this.data}) : super(key: key);
+
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
   File? _image;
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _phoneNumberController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _imgController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
+  final ApiServices _dataService = ApiServices();
+
+  @override
+  void initState() {
+    super.initState();
+    List<String> parts = widget.data.split('-');
+    _nameController.text = parts[0];
+    _phoneNumberController.text = parts[1];
+    _emailController.text = parts[2];
+    _imgController.text = parts[3];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Profile"),
+        title: const Text("Edit Profile"),
       ),
       body: Center(
         child: Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           width: 300,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: _pickImage,
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                            leading: const Icon(Icons.photo),
+                            title: const Text('Ambil dari Galeri'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _pickImage();
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.camera),
+                            title: const Text('Ambil dari Kamera'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _pickImageFromCamera();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _image != null ? FileImage(_image!) : null,
-                  child: _image == null
-                      ? Icon(Icons.person, size: 50, color: Colors.white)
-                      : null,
+                  radius: 90,
+                  backgroundImage: _image != null
+                      ? FileImage(_image!)
+                      : NetworkImage(_imgController.text)
+                          as ImageProvider<Object>?,
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: "Nama"),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: _phoneNumberController,
-                decoration: InputDecoration(labelText: "Nomor HP"),
-                keyboardType: TextInputType.phone,
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: "Email"),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _saveChanges();
-                      Navigator.of(context).pop(true); // Returning true after saving changes
-                    },
-                    child: Text("Simpan"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(false); // Returning false if changes are not saved
-                    },
-                    child: Text("Batal"),
-                  ),
-                ],
+              const SizedBox(height: 16),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(labelText: "Nama"),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _phoneNumberController,
+                      decoration: const InputDecoration(labelText: "Nomor HP"),
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(labelText: "Email"),
+                      enabled: false,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 32),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            final isValidForm =
+                                _formKey.currentState!.validate();
+
+                            if (isValidForm) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return const AlertDialog(
+                                    content: Row(
+                                      children: [
+                                        CircularProgressIndicator(),
+                                        SizedBox(width: 16.0),
+                                        Text("editing..."),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                barrierDismissible: false,
+                              );
+                              final postModel = ProfileInput(
+                                name: _nameController.text,
+                                phoneNumber: _phoneNumberController.text,
+                                base64url: _imgController.text,
+                              );
+
+                              try {
+                                ProfileResponse? res =
+                                    await _dataService.putProfile(postModel);
+                                Navigator.pop(context);
+                                if (res.status == true) {
+                                  Navigator.of(context).pop(true);
+                                } else {
+                                  displaySnackbar(res.message);
+                                }
+                              } catch (e) {
+                                Navigator.pop(context);
+                                displaySnackbar(
+                                    "An error occurred while logging in.");
+                              }
+                            }
+                            // Returning true after saving changes
+                          },
+                          child: const Text("Simpan"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(
+                                false); // Returning false if changes are not saved
+                          },
+                          child: const Text("Batal"),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -80,27 +179,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Future<void> _pickImage() async {
+  void _pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      setState(() {
+    setState(() {
+      if (pickedFile != null) {
         _image = File(pickedFile.path);
-      });
-    }
+      }
+    });
   }
 
-  void _saveChanges() {
-    // Implement saving data to storage or server
-    // You can use _nameController.text, _phoneNumberController.text, etc.
-    // Also, save the image path if an image is selected.
-    // For simplicity, I'm just printing the values for now.
-    print("Name: ${_nameController.text}");
-    print("Phone Number: ${_phoneNumberController.text}");
-    print("Email: ${_emailController.text}");
-    if (_image != null) print("Image Path: ${_image!.path}");
+  void _pickImageFromCamera() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
+  }
+
+  void _saveChanges() async {
+    // if (_image != null) print("Image Path: ${_image!.path}");
 
     // Add logic to save data to storage or server here
+  }
+
+  dynamic displaySnackbar(String msg) {
+    return ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(msg)));
   }
 }

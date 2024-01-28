@@ -124,7 +124,9 @@ Widget build(BuildContext context) {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => EditProfilePage()),
+                          MaterialPageRoute(builder: (context) => EditProfilePage(
+                            data: "${_profileMdl.name}-${_profileMdl.phoneNumber}-${_profileMdl.email}-${_profileMdl.base64url}",
+                          )),
                         ).then((value) {
                           // Callback after returning from EditProfilePage
                           if (value == true) {

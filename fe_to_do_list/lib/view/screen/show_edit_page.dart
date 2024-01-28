@@ -153,14 +153,13 @@ class _ShowTodolistState extends State<ShowTodolist> {
                               children: [
                                 CircularProgressIndicator(),
                                 SizedBox(width: 16.0),
-                                Text("adding..."),
+                                Text("edit..."),
                               ],
                             ),
                           );
                         },
                         barrierDismissible: false,
                       );
-                      print(">>>>>>>>>>>>>RESPONSE<<<<<<<<<<<<< ${_priorityCtl.text}");
                       final postModel = ListInput(
                         title: _titleCtl.text,
                         description: _descCtl.text,

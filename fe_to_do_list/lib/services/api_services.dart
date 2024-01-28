@@ -85,8 +85,7 @@ class ApiServices {
     }
   }
 
-  Future<TodolistResponse> putTodolist(
-      ListInput data, String idTodolist) async {
+  Future<TodolistResponse> putTodolist(ListInput data, String idTodolist) async {
     Options options = Options(
       headers: {
         'Authorization': 'Bearer $token', // Assuming it's a Bearer token
@@ -179,10 +178,11 @@ class ApiServices {
     }
   }
 
-  Future<ProfileResponse?> putProfile(ProfileInput data) async {
+  Future<ProfileResponse> putProfile(ProfileInput data) async {
+    logindata = await SharedPreferences.getInstance();
     Options options = Options(
       headers: {
-        'Authorization': 'Bearer $token', // Assuming it's a Bearer token
+        'Authorization': 'Bearer ${logindata.getString('token') ?? ""}', // Assuming it's a Bearer token
         // You may need to adjust the header format based on your API requirements
       },
     );
