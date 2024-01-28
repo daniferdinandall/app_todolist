@@ -47,12 +47,8 @@ class _ProfilePageState extends State<ProfilePage> {
     isLoading = true;
     final profil = await _dataService.getProfil();
     setState(() {
-      print(">>>>>>>>Profil1<<<<<<<<");
-      print(profil);
       if (profil != null) {
         _profileMdl = profil;
-        print(">>>>>>>>Profil2<<<<<<<<");
-        print(_profileMdl);
       }
     });
     isLoading = false;
@@ -105,13 +101,12 @@ Widget build(BuildContext context) {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    
                     CircleAvatar(
                       radius: 90,
-                      backgroundImage: (_profileMdl.base64url == ''
-                          ? const AssetImage('images/default_avatar.jpg')
-                          : NetworkImage(
+                      backgroundImage: NetworkImage(
                               _profileMdl.base64url,
-                            )) as ImageProvider<Object>?,
+                            ),
                     ),
                     const SizedBox(height: 64),
                     Text("Nama: ${_profileMdl.name != '' ? _profileMdl.name : "s"}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),

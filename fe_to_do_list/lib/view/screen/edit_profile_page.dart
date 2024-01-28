@@ -2,7 +2,6 @@
 
 import 'dart:io';
 import 'package:contact_dio/model/profile_model.dart';
-import 'package:contact_dio/navbar.dart';
 import 'package:contact_dio/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,6 +21,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _phoneNumberController = TextEditingController();
   final _emailController = TextEditingController();
   final _imgController = TextEditingController();
+
+  final String _nameOld = '';
+  final String _phoneNumberOld = '';
 
   final _formKey = GlobalKey<FormState>();
 
@@ -43,136 +45,167 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         title: const Text("Edit Profile"),
       ),
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          width: 300,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            leading: const Icon(Icons.photo),
-                            title: const Text('Ambil dari Galeri'),
-                            onTap: () {
-                              Navigator.pop(context);
-                              _pickImage();
+      body: SingleChildScrollView(
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            width: 300,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 46),
+                GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              leading: const Icon(Icons.photo),
+                              title: const Text('Ambil dari Galeri'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _pickImage();
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.camera),
+                              title: const Text('Ambil dari Kamera'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _pickImageFromCamera();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 90,
+                    backgroundImage: _image != null
+                        ? FileImage(_image!)
+                        : NetworkImage(_imgController.text)
+                            as ImageProvider<Object>?,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(labelText: "Nama"),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _phoneNumberController,
+                        decoration:
+                            const InputDecoration(labelText: "Nomor HP"),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(labelText: "Email"),
+                        enabled: false,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
+                              final isValidForm =
+                                  _formKey.currentState!.validate();
+
+                              if (isValidForm) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return const AlertDialog(
+                                      content: Row(
+                                        children: [
+                                          CircularProgressIndicator(),
+                                          SizedBox(width: 16.0),
+                                          Text("editing..."),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  barrierDismissible: false,
+                                );
+                                final postModel = ProfileInput(
+                                  name: _nameController.text,
+                                  phoneNumber: _phoneNumberController.text,
+                                  // base64url: _imgController.text,
+                                );
+                                Map<String, dynamic> postData = {
+                                  'image': _image != null
+                                      ? _image!
+                                      : _imgController.text,
+                                };
+                                try {
+                                  bool status = false;
+                                  String message = '';
+                                  if (_nameController.text != _nameOld ||
+                                      _phoneNumberController.text !=
+                                          _phoneNumberOld) {
+                                    ProfileResponse? res = await _dataService
+                                        .putProfile(postModel);
+
+                                    if (res.status == true) {
+                                      status = true;
+                                      message = res.message;
+                                    }
+                                  }
+                                  // kirim photo
+                                  if (_image != null) {
+                                    ProfileResponse? resImg = await _dataService
+                                        .putImage(image: postData['image']);
+
+                                    if (resImg!.status == true) {
+                                      status = true;
+                                      message = '$message\n${resImg.message}';
+                                    }
+                                  }
+
+                                  Navigator.pop(context);
+
+                                  if (status) {
+                                    Navigator.of(context).pop(true);
+                                  } else {
+                                    displaySnackbar(message);
+                                  }
+                                } catch (e) {
+                                  Navigator.pop(context);
+                                  displaySnackbar(
+                                      "An error occurred while logging in.");
+                                }
+                              }
+                              // Returning true after saving changes
                             },
+                            child: const Text("Simpan"),
                           ),
-                          ListTile(
-                            leading: const Icon(Icons.camera),
-                            title: const Text('Ambil dari Kamera'),
-                            onTap: () {
-                              Navigator.pop(context);
-                              _pickImageFromCamera();
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(
+                                  false); // Returning false if changes are not saved
                             },
+                            child: const Text("Batal"),
                           ),
                         ],
-                      );
-                    },
-                  );
-                },
-                child: CircleAvatar(
-                  radius: 90,
-                  backgroundImage: _image != null
-                      ? FileImage(_image!)
-                      : NetworkImage(_imgController.text)
-                          as ImageProvider<Object>?,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(labelText: "Nama"),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _phoneNumberController,
-                      decoration: const InputDecoration(labelText: "Nomor HP"),
-                      keyboardType: TextInputType.phone,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(labelText: "Email"),
-                      enabled: false,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            final isValidForm =
-                                _formKey.currentState!.validate();
-
-                            if (isValidForm) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return const AlertDialog(
-                                    content: Row(
-                                      children: [
-                                        CircularProgressIndicator(),
-                                        SizedBox(width: 16.0),
-                                        Text("editing..."),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                barrierDismissible: false,
-                              );
-                              final postModel = ProfileInput(
-                                name: _nameController.text,
-                                phoneNumber: _phoneNumberController.text,
-                                base64url: _imgController.text,
-                              );
-
-                              try {
-                                ProfileResponse? res =
-                                    await _dataService.putProfile(postModel);
-                                Navigator.pop(context);
-                                if (res.status == true) {
-                                  Navigator.of(context).pop(true);
-                                } else {
-                                  displaySnackbar(res.message);
-                                }
-                              } catch (e) {
-                                Navigator.pop(context);
-                                displaySnackbar(
-                                    "An error occurred while logging in.");
-                              }
-                            }
-                            // Returning true after saving changes
-                          },
-                          child: const Text("Simpan"),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(
-                                false); // Returning false if changes are not saved
-                          },
-                          child: const Text("Batal"),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -199,12 +232,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _image = File(pickedFile.path);
       }
     });
-  }
-
-  void _saveChanges() async {
-    // if (_image != null) print("Image Path: ${_image!.path}");
-
-    // Add logic to save data to storage or server here
   }
 
   dynamic displaySnackbar(String msg) {

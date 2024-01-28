@@ -27,17 +27,29 @@ class ProfileModel {
 class ProfileInput {
   final String name;
   final String phoneNumber;
-  final String base64url;
+  // final String base64url;
 
   ProfileInput({
     required this.name,
     required this.phoneNumber,
-    required this.base64url,
+    // required this.base64url,
   });
 
   Map<String, dynamic> toJson() => {
         "name": name,
         "phonenumber": phoneNumber,
+        // "base64url": base64url,
+      };
+}
+
+class ImageInput {
+  final String base64url;
+
+  ImageInput({
+    required this.base64url,
+  });
+
+  Map<String, dynamic> toJson() => {
         "base64url": base64url,
       };
 }

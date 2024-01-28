@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:contact_dio/model/lists_model.dart';
 import 'package:contact_dio/model/profile_model.dart';
@@ -254,6 +255,44 @@ class ApiServices {
     }
   }
 
+  Future<ProfileResponse?> putImage ({required dynamic image}) async {
+    logindata = await SharedPreferences.getInstance();
+    Options options = Options(
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'Bearer ${logindata.getString('token') ?? ""}', // Assuming it's a Bearer token
+        // You may need to adjust the header format based on your API requirements
+      },
+    );
+    try {
+      MultipartFile? imageFile;
+      if (image is File) {
+        imageFile = await MultipartFile.fromFile(image.path);
+      } else if (image is String) {
+        imageFile = MultipartFile.fromString(image);
+      }
+      FormData formData = FormData.fromMap({
+        "file": imageFile,
+      });
+      final response = await dio.put('$_baseUrl/todolist-photo',
+          data: formData, options: options);
+      debugPrint('>>>>>>>>>>>>Api Service Img<<<<<<<<<<<');
+      debugPrint('Response: ${response.data}');
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonData = json.decode(response.data);
+        return ProfileResponse.fromJson(jsonData);
+      }
+      return ProfileResponse.fromJson(json.decode(response.data));
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode != 200) {
+        debugPrint('Client error - the request cannot be fulfilled');
+        return ProfileResponse.fromJson(e.response!.data);
+      }
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
   void dispose() {
     // If there's any cleanup logic needed, add it here.
     // For example, if dio instance needs to be closed, you can do:
