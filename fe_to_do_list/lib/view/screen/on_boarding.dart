@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:contact_dio/view/screen/login_page.dart';
 import 'package:flutter/material.dart';
 
@@ -76,7 +78,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               curve: Curves.ease,
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Sebelumnya',
                             style: TextStyle(
                               color: Colors.indigo,
@@ -94,7 +96,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                   builder: (context) => const LoginPage()),
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Skip',
                             style: TextStyle(
                               color: Colors.indigo,
@@ -122,7 +124,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           currentPage == onboardingData.length - 1
                               ? 'Lanjut'
                               : 'Selanjutnya',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.indigo,
                             fontSize: 18,
                           ),
@@ -236,7 +238,7 @@ class OnboardingDetailsPage extends StatelessWidget {
                           Navigator.pop(
                               context); // Go back to the previous onboarding page
                         },
-                        child: Text(
+                        child: const Text(
                           'Sebelumnya',
                           style: TextStyle(
                             color: Colors.indigo,
@@ -252,7 +254,7 @@ class OnboardingDetailsPage extends StatelessWidget {
                                 builder: (context) => const LoginPage()),
                           );
                         },
-                        child: Text(
+                        child: const Text(
                           'Selanjutnya',
                           style: TextStyle(
                             color: Colors.indigo,

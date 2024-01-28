@@ -42,18 +42,6 @@ class ProfileInput {
       };
 }
 
-class ImageInput {
-  final String base64url;
-
-  ImageInput({
-    required this.base64url,
-  });
-
-  Map<String, dynamic> toJson() => {
-        "base64url": base64url,
-      };
-}
-
 //DIGUNAKAN UNTUK RESPONSE FORM EDIT PROFILE
 class ProfileResponse {
   final String message;

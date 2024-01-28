@@ -63,7 +63,6 @@ class _AddDataPageState extends State<AddDataPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("token=$token"),
               TextFormField(
                 controller: _titleCtl,
                 decoration: const InputDecoration(labelText: 'Title'),
