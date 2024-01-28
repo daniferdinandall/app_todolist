@@ -24,15 +24,6 @@ class ListsModel {
         priority: json["priority"],
         createdat: json["createdat"],
       );
-
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "title": title,
-        "description": description,
-        "duedate": duedate,
-        "priority": priority,
-        "createdat": createdat,
-      };
 }
 
 // Model untuk input form

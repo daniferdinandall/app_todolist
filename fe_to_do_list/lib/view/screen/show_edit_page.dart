@@ -3,7 +3,6 @@
 import 'package:contact_dio/model/lists_model.dart';
 import 'package:contact_dio/navbar.dart';
 import 'package:contact_dio/services/api_services.dart';
-import 'package:contact_dio/view/screen/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -169,7 +168,7 @@ class _ShowTodolistState extends State<ShowTodolist> {
                         duedate: _dueDateTime.millisecondsSinceEpoch ~/ 1000,
                       );
                       try {
-                        TodolistResponse? res = await _dataService.putTodolist(postModel,widget.idTodolist,token);
+                        TodolistResponse? res = await _dataService.putTodolist(postModel,widget.idTodolist);
                         Navigator.pop(context);
                         if (res.status == true) {
                               Navigator.pushAndRemoveUntil(

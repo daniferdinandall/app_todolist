@@ -176,7 +176,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   children: [
                                     CircularProgressIndicator(),
                                     SizedBox(width: 16.0),
-                                    Text("Logging in..."),
+                                    Text("Loading..."),
                                   ],
                                 ),
                               );
@@ -196,12 +196,29 @@ class _RegisterPageState extends State<RegisterPage> {
                                 await _dataService.register(postModel);
                             Navigator.pop(context);
                             if (res!.status == true) {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginPage(),
-                                ),
-                                (route) => false,
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Success"),
+                                    content: const Text("Register Successful!"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const LoginPage(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                        },
+                                        child: const Text("OK"),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             } else {
                               displaySnackbar(res.message);

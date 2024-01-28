@@ -14,7 +14,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   final List<Widget> _pages = <Widget>[
     const HomePage(),
-    ProfilePage(), // Ganti dengan halaman profil
+    const ProfilePage()
   ];
 
   void onTabTapped(int index) {
@@ -42,11 +42,20 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 }
 
-// class MyShared extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Text('Page 2'),
-//     );
-//   }
-// }
+class MyShared extends StatefulWidget {
+  const MyShared({super.key});
+
+  @override
+  State<MyShared> createState() => _MySharedState();
+}
+
+class _MySharedState extends State<MyShared> {
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Profile'),
+      )
+    );
+  }
+}

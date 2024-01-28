@@ -44,29 +44,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    checkLogin().then((_) => {
-          inital().then((_) => {
-                if (!_listsMdl.isNotEmpty)
-                  {
-                    refreshToDoList(),
-                  }
-              })
+
+    inital().then((_) => {
+          if (!_listsMdl.isNotEmpty)
+            {
+              refreshToDoList()
+            }
         });
   }
 
-  checkLogin() async {
-    bool isLoggedIn = await AuthManager.isLoggedIn();
-    if (!isLoggedIn) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ),
-        (route) => false,
-      );
-    }
-  }
-
+  
   Future<void> inital() async {
     logindata = await SharedPreferences.getInstance();
     setState(() {
@@ -77,7 +64,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> refreshToDoList() async {
     isLoading = true;
-    final todolist = await _dataService.getAllTodolist(token);
+    final todolist = await _dataService.getAllTodolist();
     setState(() {
       if (_listsMdl.isNotEmpty) {
         _listsMdl.clear();
@@ -136,6 +123,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // super.build(context);
     return Scaffold(
@@ -160,7 +159,6 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("token=$token"),
                 const Text(
                   'You\'r List',
                   style: TextStyle(
@@ -432,8 +430,7 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton(
               onPressed: () async {
-                TodolistResponse? res =
-                    await _dataService.deleteTodolist(id, token);
+                TodolistResponse? res = await _dataService.deleteTodolist(id);
                 setState(() {
                   ctRes = res;
                 });

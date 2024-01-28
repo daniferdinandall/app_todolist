@@ -18,7 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   final ApiServices _dataService = ApiServices();
 
@@ -56,6 +55,13 @@ class _LoginPageState extends State<LoginPage> {
       return 'Masukkan minimal 3 karakter';
     }
     return null;
+  }
+
+    @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -167,13 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                             if (res!.status == true) {
                               await AuthManager.login(
                                   _emailController.text, res.token.toString());
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const BottomNavBar(),
-                                ),
-                                (route) => false,
-                              );
+                              
 
                               showDialog(
                                 context: context,
@@ -185,6 +185,13 @@ class _LoginPageState extends State<LoginPage> {
                                       TextButton(
                                         onPressed: () {
                                           Navigator.pop(context);
+                                          Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const BottomNavBar(),
+                                          ),
+                                          (route) => false,
+                                        );
                                         },
                                         child: const Text("OK"),
                                       ),
