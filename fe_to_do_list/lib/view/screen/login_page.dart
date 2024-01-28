@@ -26,8 +26,8 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     debugPrint("Init state is called.");
     checkLogin();
-    _passwordController.text="12345678";
-    _emailController.text="dani@mail.com";
+    _passwordController.text = "12345678";
+    _emailController.text = "dani@mail.com";
   }
 
   void checkLogin() async {
@@ -43,13 +43,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // @override
-  // void dispose() {
-  //   _emailController.dispose();
-  //   _passwordController.dispose();
-  //   super.dispose();
-  // }
-
   String? _validateEmail(String? value) {
     if (value != null && value.length < 4) {
       return 'Masukkan minimal 4 karakter';
@@ -62,6 +55,13 @@ class _LoginPageState extends State<LoginPage> {
       return 'Masukkan minimal 3 karakter';
     }
     return null;
+  }
+
+    @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -84,9 +84,9 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(
-                    height: 250, // Sesuaikan tinggi gambar
+                    height: 250,
                     child: Image.asset(
-                      'images/logo.jpg', // Ganti dengan path gambar yang sesuai
+                      'images/logo.jpg',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                   const Text(
                     'Welcome Back to ToDo List App',
                     style: TextStyle(
-                      fontSize: 24, // Sesuaikan ukuran teks
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -169,15 +169,35 @@ class _LoginPageState extends State<LoginPage> {
                             LoginResponse? res =
                                 await _dataService.login(postModel);
                             Navigator.pop(context);
+
                             if (res!.status == true) {
                               await AuthManager.login(
                                   _emailController.text, res.token.toString());
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const BottomNavBar(),
-                                ),
-                                (route) => false,
+                              
+
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Success"),
+                                    content: const Text("Login successful!"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const BottomNavBar(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                        },
+                                        child: const Text("OK"),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             } else {
                               displaySnackbar(res.message);
@@ -208,8 +228,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all<Color>(
-                          const Color.fromARGB(255, 117, 35,
-                              110)),
+                          const Color.fromARGB(255, 117, 35, 110)),
                     ),
                     child: const Text('Don\'t have an account? Register'),
                   ),

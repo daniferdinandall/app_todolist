@@ -1,14 +1,14 @@
-import 'package:contact_dio/view/screen/login_page.dart';
+import 'package:contact_dio/view/screen/on_boarding.dart';
 import 'package:flutter/material.dart';
+
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: const LoginPage(), // Ubah halaman awal menjadi LoginPage()
+      home: const OnboardingPage(),
     );
   }
 }

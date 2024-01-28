@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:contact_dio/view/screen/home_page.dart';
+import 'package:contact_dio/view/screen/profile_page.dart'; // Import halaman profil
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -8,16 +9,17 @@ class BottomNavBar extends StatefulWidget {
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar>  {
+class _BottomNavBarState extends State<BottomNavBar> {
   int _currentPageIndex = 0;
 
   final List<Widget> _pages = <Widget>[
     const HomePage(),
-    MyShared(),
+    const ProfilePage()
   ];
+
   void onTabTapped(int index) {
     setState(() {
-    _currentPageIndex = index;
+      _currentPageIndex = index;
     });
   }
 
@@ -28,7 +30,7 @@ class _BottomNavBarState extends State<BottomNavBar>  {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPageIndex,
         onTap: onTabTapped,
-        items: const [  
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Todolist'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
@@ -40,11 +42,20 @@ class _BottomNavBarState extends State<BottomNavBar>  {
   }
 }
 
-class MyShared extends StatelessWidget {
+class MyShared extends StatefulWidget {
+  const MyShared({super.key});
+
+  @override
+  State<MyShared> createState() => _MySharedState();
+}
+
+class _MySharedState extends State<MyShared> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 2'),
+    return const Scaffold(
+      body: Center(
+        child: Text('Profile'),
+      )
     );
   }
 }

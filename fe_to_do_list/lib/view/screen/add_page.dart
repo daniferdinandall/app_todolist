@@ -63,7 +63,6 @@ class _AddDataPageState extends State<AddDataPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("token=$token"),
               TextFormField(
                 controller: _titleCtl,
                 decoration: const InputDecoration(labelText: 'Title'),
@@ -163,7 +162,7 @@ class _AddDataPageState extends State<AddDataPage> {
                         duedate: _dueDateTime.millisecondsSinceEpoch ~/ 1000,
                       );
                       try {
-                        TodolistResponse? res = await _dataService.postTodolist(postModel,token);
+                        TodolistResponse? res = await _dataService.postTodolist(postModel);
                         Navigator.pop(context);
                         if (res.status == true) {
                               Navigator.pushAndRemoveUntil(

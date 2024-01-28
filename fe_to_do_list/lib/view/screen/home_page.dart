@@ -19,10 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-// class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
-//   @override
-//   bool get wantKeepAlive => true;
-
   final _formKey = GlobalKey<FormState>();
   final ApiServices _dataService = ApiServices();
   List<ListsModel> _listsMdl = [];
@@ -44,27 +40,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    checkLogin().then((_) => {
-          inital().then((_) => {
-                if (!_listsMdl.isNotEmpty)
-                  {
-                    refreshToDoList(),
-                  }
-              })
-        });
-  }
 
-  checkLogin() async {
-    bool isLoggedIn = await AuthManager.isLoggedIn();
-    if (!isLoggedIn) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ),
-        (route) => false,
-      );
-    }
+    inital().then((_) => {
+          if (!_listsMdl.isNotEmpty) {refreshToDoList()}
+        });
   }
 
   Future<void> inital() async {
@@ -77,7 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> refreshToDoList() async {
     isLoading = true;
-    final todolist = await _dataService.getAllTodolist(token);
+    final todolist = await _dataService.getAllTodolist();
     setState(() {
       if (_listsMdl.isNotEmpty) {
         _listsMdl.clear();
@@ -136,6 +115,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // super.build(context);
     return Scaffold(
@@ -160,7 +151,6 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("token=$token"),
                 const Text(
                   'You\'r List',
                   style: TextStyle(
@@ -293,35 +283,30 @@ class _HomePageState extends State<HomePage> {
                       : _buildListTodolist(context),
                 ),
                 const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        await refreshToDoList();
-                        setState(() {});
-                      },
-                      child: const Text('Refresh Data'),
-                    )
-                  ],
+                  height: 50,
                 ),
               ],
             ),
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddDataPage(),
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(top: 50),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AddDataPage(),
+              ),
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+      
     );
   }
 
@@ -432,8 +417,7 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton(
               onPressed: () async {
-                TodolistResponse? res =
-                    await _dataService.deleteTodolist(id, token);
+                TodolistResponse? res = await _dataService.deleteTodolist(id);
                 setState(() {
                   ctRes = res;
                 });
